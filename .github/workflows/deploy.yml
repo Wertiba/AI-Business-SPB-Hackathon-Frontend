@@ -1,0 +1,26 @@
+name: CI/CD frontend
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: anastasia
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/anastasia/frontend/ai_hack_frontend
+          git checkout -- .
+          git pull origin main
+          chmod +x deploy.sh
+          ./deploy.sh
